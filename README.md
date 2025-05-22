@@ -37,7 +37,7 @@ print(results); // [{name: John, age: 22}]
   </a>
   <img src="https://img.shields.io/badge/dart-2.12.0-blue.svg" alt="Dart Version">
   <img src="https://img.shields.io/badge/flutter-2.0.0-blue.svg" alt="Flutter Version">
-  <img src="https://img.shields.io/badge/platform-android%20|%20ios%20|%20web-blue.svg" alt="Platform Support">
+  <img src="https://img.shields.io/badge/platform-android%20|%20ios%20|%20web%20|%20windows%20|%20macos-blue.svg" alt="Platform Support">
   <img src="https://img.shields.io/github/issues/vento007/tiny_db.svg" alt="Open Issues">
   <img src="https://img.shields.io/github/issues-pr/vento007/tiny_db.svg" alt="Pull Requests">
   <img src="https://img.shields.io/github/contributors/vento007/tiny_db.svg" alt="Contributors">
