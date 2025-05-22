@@ -1,27 +1,29 @@
-dynamic _deepCopyValue(dynamic value) {
+dynamic deepCopyValue(dynamic value) {
   if (value is Map) {
-    return value.map((k, v) => MapEntry(_deepCopyValue(k), _deepCopyValue(v)));
+    return value.map((k, v) => MapEntry(deepCopyValue(k), deepCopyValue(v)));
   } else if (value is List) {
-    return value.map(_deepCopyValue).toList();
+    return value.map(deepCopyValue).toList();
   } else if (value is Set) {
-    return value.map(_deepCopyValue).toSet();
+    return value.map(deepCopyValue).toSet();
   } else {
     return value;
   }
 }
 
 extension DeepCopyList<T> on List<T> {
-  List<T> deepCopy() => List<T>.from(map((e) => _deepCopyValue(e) as T));
+  List<dynamic> deepCopy() {
+    return map((e) => deepCopyValue(e)).toList();
+  }
 }
 
 extension DeepCopyMap<K, V> on Map<K, V> {
-  Map<K, V> deepCopy() => Map<K, V>.fromEntries(
-    entries.map(
-      (e) => MapEntry(_deepCopyValue(e.key) as K, _deepCopyValue(e.value) as V),
-    ),
-  );
+  Map<dynamic, dynamic> deepCopy() {
+    return map((k, v) => MapEntry(deepCopyValue(k), deepCopyValue(v)));
+  }
 }
 
 extension DeepCopySet<T> on Set<T> {
-  Set<T> deepCopy() => Set<T>.from(map((e) => _deepCopyValue(e) as T));
+  Set<dynamic> deepCopy() {
+    return map((e) => deepCopyValue(e)).toSet();
+  }
 }
