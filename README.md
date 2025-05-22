@@ -35,8 +35,8 @@ print(results); // [{name: John, age: 22}]
   <a href="https://flutter.dev/">
     <img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website">
   </a>
-  <img src="https://img.shields.io/badge/dart-2.12.0-blue.svg" alt="Dart Version">
-  <img src="https://img.shields.io/badge/flutter-2.0.0-blue.svg" alt="Flutter Version">
+  <img src="https://img.shields.io/badge/dart-3.4.0-blue.svg" alt="Dart Version">
+  <img src="https://img.shields.io/badge/flutter-3.19.0-blue.svg" alt="Flutter Version">
   <img src="https://img.shields.io/badge/platform-android%20|%20ios%20|%20web%20|%20windows%20|%20macos-blue.svg" alt="Platform Support">
   <img src="https://codecov.io/gh/vento007/tiny_db/graph/badge.svg?token=92U1VQ1FZH" alt="Codecov">
   <img src="https://img.shields.io/github/issues/vento007/tiny_db.svg" alt="Open Issues">
