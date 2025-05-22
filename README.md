@@ -1,7 +1,7 @@
 <!-- README header -->
 
 <div align="center">
-  <img src="docs/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
+  <img src="doc/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
 </div>
 
 ```dart
@@ -62,7 +62,7 @@ print(results); // [{name: John, age: 22}]
 
 Whether you need a simple embedded database for prototyping, testing, or production apps, Tiny DB offers a clean, intuitive, and powerful solution.
 
-Wondering how Tiny DB compares to SharedPreferences, Isar, Hive, or SQLite? See our [detailed comparison](docs/comparison.md).
+Wondering how Tiny DB compares to SharedPreferences, Isar, Hive, or SQLite? See our [detailed comparison](doc/comparison.md).
 
 ## Table of Contents
 
@@ -233,7 +233,7 @@ await users.remove(where('age').equals(31));
 
 # Advanced Usage
 
-Below are a few advanced patterns and real-world use cases. For a comprehensive set of examples, see [More Examples](docs/examples.md).
+Below are a few advanced patterns and real-world use cases. For a comprehensive set of examples, see [More Examples](doc/examples.md).
 
 ### Multi-Table Usage
 
@@ -300,7 +300,7 @@ final productList = docs.map(Product.fromJson).toList();
 
 ---
 
-**See [docs/examples.md](docs/examples.md) for a full list of advanced and edge-case examples.**
+**See [doc/examples.md](doc/examples.md) for a full list of advanced and edge-case examples.**
 
 <br>
 
@@ -333,7 +333,7 @@ await table.update(UpdateOperations().pull('tags', 'old'), where('name').equals(
 ```
 
 For more details and advanced examples, see  
-[docs/deep_equality_and_add_unique.md](docs/deep_equality_and_add_unique.md)
+[doc/deep_equality_and_add_unique.md](doc/deep_equality_and_add_unique.md)
 
 
 <br>
@@ -763,7 +763,7 @@ Wondering how Tiny DB compares to other storage solutions?
 
 We've created a detailed comparison with SharedPreferences, Isar, Hive, and SQLite to help you choose the right tool for your needs.
 
-**[Read the full comparison here](docs/comparison.md)**
+**[Read the full comparison here](doc/comparison.md)**
 
 Tiny DB positions itself as the "just right" option between simple key-value stores and full-featured databases - powerful enough for real applications but simple enough to learn in minutes.
 
