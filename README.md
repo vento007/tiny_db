@@ -766,3 +766,5 @@ We've created a detailed comparison with SharedPreferences, Isar, Hive, and SQLi
 **[Read the full comparison here](docs/comparison.md)**
 
 tiny_db positions itself as the "just right" option between simple key-value stores and full-featured databases - powerful enough for real applications but simple enough to learn in minutes.
+
+
