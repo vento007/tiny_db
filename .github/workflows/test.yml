@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +23,15 @@ jobs:
         
       - name: Run tests with coverage
         run: flutter test --coverage
+        
+      - name: Verify coverage file
+        run: |
+          if [ ! -f ./coverage/lcov.info ]; then
+            echo "Coverage file not found!"
+            exit 1
+          fi
+          echo "Coverage file size: $(wc -l < ./coverage/lcov.info) lines"
+          head -n 5 ./coverage/lcov.info
         
       - name: Upload coverage to Codecov
         run: |
