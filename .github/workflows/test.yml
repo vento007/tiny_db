@@ -34,7 +34,8 @@ jobs:
           head -n 5 ./coverage/lcov.info
         
       - name: Upload coverage to Codecov
-        run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -t ${{ secrets.CODECOV_TOKEN }} -f ./coverage/lcov.info --verbose 
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: vento007/tiny_db
+          verbose: true 
