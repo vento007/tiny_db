@@ -25,12 +25,7 @@ jobs:
         run: flutter test --coverage
         
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          fail_ci_if_error: true
-          verbose: true
-          flags: unittests
-          name: codecov-umbrella
-          xcode: false 
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -t ${{ secrets.CODECOV_TOKEN }} -f ./coverage/lcov.info --verbose 
