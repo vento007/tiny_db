@@ -1,7 +1,7 @@
 <!-- README header -->
 
 <div align="center">
-  <img src="docs/ascii-text-art.png" alt="tiny_db ASCII banner" width="400"/>
+  <img src="docs/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
 </div>
 
 ```dart
@@ -18,7 +18,7 @@ print(results); // [{name: John, age: 22}]
 
 <div align="center">
 
-<h1 align="center">🚀 tiny_db</h1>
+<h1 align="center">📦 Tiny DB ⚡</h1>
 
 <p align="center"><em>Ultra-lightweight, embeddable NoSQL database for Dart & Flutter</em></p>
 
@@ -49,20 +49,20 @@ print(results); // [{name: John, age: 22}]
 
 </div>
 
-# tiny_db
+# Tiny DB
 
 ## Overview
 
-**tiny_db** is a modern, ultra-lightweight NoSQL database for Dart and Flutter, inspired by the beloved [Python TinyDB](https://tinydb.readthedocs.io/en/latest/). With over 80% feature parity and several unique enhancements, it brings the power and flexibility of document-oriented storage to your Dart and Flutter apps—no server required!
+**Tiny DB** is a modern, ultra-lightweight NoSQL database for Dart and Flutter, inspired by the beloved [Python TinyDB](https://tinydb.readthedocs.io/en/latest/). With over 80% feature parity and several unique enhancements, it brings the power and flexibility of document-oriented storage to your Dart and Flutter apps—no server required!
 
 - 🚀 **Feature-rich:** Supports advanced queries, update operations, and deep equality for robust data handling.
 - 🧠 **In-memory & JSON file storage:** Choose blazing-fast ephemeral memory mode or persistent, human-readable JSON file storage—switch at any time.
 - 🔄 **Familiar, expressive API:** Inspired by Python TinyDB, but fully Dart-idiomatic and enhanced for Dart and Flutter developers.
 - 🎯 **Embeddable & portable:** Works everywhere Dart or Flutter runs. In-memory mode is pure Dart (no native code). JSON file storage for Flutter apps uses the standard `path_provider` plugin for safe device storage.
 
-Whether you need a simple embedded database for prototyping, testing, or production apps, tiny_db offers a clean, intuitive, and powerful solution.
+Whether you need a simple embedded database for prototyping, testing, or production apps, Tiny DB offers a clean, intuitive, and powerful solution.
 
-Wondering how tiny_db compares to SharedPreferences, Isar, Hive, or SQLite? See our [detailed comparison](docs/comparison.md).
+Wondering how Tiny DB compares to SharedPreferences, Isar, Hive, or SQLite? See our [detailed comparison](docs/comparison.md).
 
 ## Table of Contents
 
@@ -308,7 +308,7 @@ final productList = docs.map(Product.fromJson).toList();
 
 # List & Update Operations
 
-TinyDB provides robust list mutation and update operations, all with deep equality and defensive copying for safe, predictable behavior.
+Tiny DB provides robust list mutation and update operations, all with deep equality and defensive copying for safe, predictable behavior.
 
 - **addUnique(field, value):** Add to a list only if the value (by deep equality) isn't already present.
 - **push(field, value):** Append to a list.
@@ -342,7 +342,7 @@ For more details and advanced examples, see
 
 # Storage Backends
 
-tiny_db offers two storage backends to suit different needs:
+Tiny DB offers two storage backends to suit different needs:
 
 ### MemoryStorage
 
@@ -436,7 +436,7 @@ See [json_storage_example.dart](example/json_storage_example.dart) for a complet
 
 # Dependency Injection & App Integration
 
-Here are some approaches to integrate tiny_db into your application architecture:
+Here are some approaches to integrate Tiny DB into your application architecture:
 
 ### Simple Global Instance
 
@@ -600,7 +600,7 @@ Failure to close the database properly may result in resource leaks or data inte
 
 # Testing
 
-tiny_db includes comprehensive tests to help ensure reliability and correctness.
+Tiny DB includes comprehensive tests to help ensure reliability and correctness.
 
 ### Running the Tests
 
@@ -616,7 +616,7 @@ The package includes over 200 automated tests covering core functionality, edge 
 
 ### Common Testing Patterns
 
-When writing tests for your app that uses tiny_db:
+When writing tests for your app that uses Tiny DB:
 
 ```dart
 // 1. Always use MemoryStorage for tests
@@ -647,7 +647,7 @@ test('document equality', () async {
 
 # Contributing
 
-Contributions to tiny_db are welcome and appreciated! This project aims to maintain a high standard of code quality and test coverage.
+Contributions to Tiny DB are welcome and appreciated! This project aims to maintain a high standard of code quality and test coverage.
 
 ### Pull Request Guidelines
 
@@ -660,7 +660,7 @@ When submitting a PR, please ensure:
 
 ### Writing Tests
 
-tiny_db uses Dart's built-in testing framework. Here's a simple example of how to write a test:
+Tiny DB uses Dart's built-in testing framework. Here's a simple example of how to write a test:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -719,7 +719,7 @@ When fixing bugs or adding features, consider these edge cases:
 - Concurrent operations (if applicable)
 - Resource cleanup (especially with JsonStorage)
 
-Thank you for contributing to tiny_db!
+Thank you for contributing to Tiny DB!
 <br>
 
 ---
@@ -751,7 +751,7 @@ This package is heavily inspired by the outstanding [TinyDB](https://tinydb.read
 
 # License
 
-tiny_db is available under the MIT License. See the [LICENSE](LICENSE) file for more information.
+Tiny DB is available under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 <br>
 
@@ -759,12 +759,12 @@ tiny_db is available under the MIT License. See the [LICENSE](LICENSE) file for 
 
 # Comparisons vs SharedPreferences, Isar, Hive, SQLite
 
-Wondering how tiny_db compares to other storage solutions?
+Wondering how Tiny DB compares to other storage solutions?
 
 We've created a detailed comparison with SharedPreferences, Isar, Hive, and SQLite to help you choose the right tool for your needs.
 
 **[Read the full comparison here](docs/comparison.md)**
 
-tiny_db positions itself as the "just right" option between simple key-value stores and full-featured databases - powerful enough for real applications but simple enough to learn in minutes.
+Tiny DB positions itself as the "just right" option between simple key-value stores and full-featured databases - powerful enough for real applications but simple enough to learn in minutes.
 
 
