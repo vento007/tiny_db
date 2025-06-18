@@ -1,7 +1,7 @@
 <!-- README header -->
 
 <div align="center">
-  <img src="doc/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
+  <img src="https://raw.githubusercontent.com/vento007/tiny_db/main/doc/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
 </div>
 
 ```dart

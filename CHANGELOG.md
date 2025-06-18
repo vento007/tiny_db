@@ -1,3 +1,8 @@
+## 0.9.1+1
+
+### Fixed
+- Fix banner image display on pub.dev
+
 ## 0.9.1
 
 ### Added
