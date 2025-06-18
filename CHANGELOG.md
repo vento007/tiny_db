@@ -1,3 +1,11 @@
+## 0.9.1
+
+### Added
+- Pure Dart compatibility - package now works without Flutter
+
+### Changed
+- Debug warnings now always print instead of being Flutter debug-mode conditional
+
 ## 0.9.0
 
 * Initial public release.

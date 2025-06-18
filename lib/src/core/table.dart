@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:tiny_db/tiny_db.dart';
 import 'cloner.dart';
 
@@ -44,18 +43,14 @@ class Table {
                 maxIdInTable = docId;
               }
             } else {
-              if (kDebugMode) {
-                print(
+              print(
                 'Warning: Malformed document data for ID $idStr in table $name. Expected Map, got ${docDataUnknownType.runtimeType}. Skipping.',
               );
-              }
             }
           } on FormatException {
-            if (kDebugMode) {
-              print(
-                'Warning: Malformed document ID "$idStr" in table $name. Skipping.',
-              );
-            }
+            print(
+              'Warning: Malformed document ID "$idStr" in table $name. Skipping.',
+            );
           }
         });
         _lastId = maxIdInTable;
@@ -213,12 +208,10 @@ class Table {
       }
 
       if (current is! Map<String, dynamic>) {
-        if (kDebugMode) {
-          print(
+           print(
             'Warning: Cannot apply operation to path "${action.pathSegments.join('.')}". Intermediate path does not lead to a modifiable map. Current segment is of type ${current.runtimeType}.',
           );
-        }
-        continue;
+         continue;
       }
 
       final String targetField = pathSegments.last;
@@ -249,12 +242,10 @@ class Table {
             parentMap[targetField] = incAmount;
             changed = true;
           } else {
-            if (kDebugMode) {
-              print(
+               print(
                 'Warning: Cannot increment field "$targetField" in document. Value is "$incCurrentValue". Not a number or field missing for existing non-numeric value.',
               );
-            }
-          }
+           }
           break;
         case UpdateOpType.decrement:
           dynamic decCurrentValue = parentMap[targetField];
@@ -267,11 +258,9 @@ class Table {
             parentMap[targetField] = -decAmount;
             changed = true;
           } else {
-            if (kDebugMode) {
-                print(  
+            print(  
                 'Warning: Cannot decrement field "$targetField" in document. Value is "$decCurrentValue". Not a number or field missing for existing non-numeric value.',
               );
-            }
           }
           break;
         case UpdateOpType.push:
@@ -286,11 +275,9 @@ class Table {
             parentMap[targetField] = modifiableList;
             changed = true;
           } else {
-            if (kDebugMode) {
-              print(
+            print(
                 'Warning: Cannot push to field "$targetField". It exists but is not a List (type: ${listField.runtimeType}). Value: $listField',
               );
-            }
           }
           break;
         case UpdateOpType.pull:
@@ -306,11 +293,9 @@ class Table {
               changed = true;
             }
           } else if (parentMap.containsKey(targetField)) {
-            if (kDebugMode) {
-              print(
+            print(
                 'Warning: Cannot pull from field "$targetField". It exists but is not a List (type: ${listFieldToPullFrom.runtimeType}).',
               );
-            }
           }
           break;
 
@@ -324,11 +309,9 @@ class Table {
               changed = true;
             }
           } else if (parentMap.containsKey(targetField)) {
-            if (kDebugMode) {
-              print(
+            print(
                 'Warning: Cannot pop from field "$targetField". It exists but is not a List (type: ${listFieldToPopFrom.runtimeType}).',
               );
-            }
           }
           break;
 
@@ -355,11 +338,9 @@ class Table {
               changed = true;
             } else {}
           } else if (parentMap.containsKey(targetField)) {
-            if (kDebugMode) {
-              print(
+            print(
                 'Warning: Cannot addUnique to field "$targetField". It exists but is not a List (type: ${listFieldForAddUnique.runtimeType}).',
               );
-            }
           }
           break;
       }
