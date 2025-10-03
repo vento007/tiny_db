@@ -1,47 +1,36 @@
-<!-- README header -->
-
 <div align="center">
+
+<p>
   <img src="https://raw.githubusercontent.com/vento007/tiny_db/main/doc/ascii-text-art.png" alt="Tiny DB ASCII banner" width="400"/>
+</p>
 </div>
 
-```dart
-import 'package:tiny_db/tiny_db.dart';
-
-final db = TinyDb(JsonStorage('path/to/db.json'));
-final table = db.table('users');
-
-await table.insert({'name': 'John', 'age': 22});
-final results = await table.search(where('name').equals('John'));
-
-print(results); // [{name: John, age: 22}]
-```
-
 <div align="center">
 
-<h1 align="center">📦 Tiny DB ⚡</h1>
+<h1 align="center">Tiny DB — simple document DB for Dart, zero setup</h1>
 
-<p align="center"><em>Ultra-lightweight, embeddable NoSQL database for Dart & Flutter</em></p>
+<p align="center"><em>The Dart port of TinyDB — simple documents, powerful queries, zero setup. Store Maps, query anything, works in memory or on JSON files.</em></p>
 
 <p align="center">
   <a href="https://pub.dev/packages/tiny_db">
     <img src="https://img.shields.io/pub/v/tiny_db.svg" alt="Pub">
   </a>
-  <a href="https://github.com/vento007/tiny_db">
-    <img src="https://img.shields.io/github/stars/vento007/tiny_db.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github">
-  </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT">
   </a>
-  <a href="https://flutter.dev/">
-    <img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website">
+  <a href="https://dart.dev/">
+    <img src="https://img.shields.io/badge/dart-3.4.0%2B-blue.svg" alt="Dart Version">
   </a>
-  <img src="https://img.shields.io/badge/dart-3.4.0-blue.svg" alt="Dart Version">
-  <img src="https://img.shields.io/badge/flutter-3.19.0-blue.svg" alt="Flutter Version">
   <img src="https://img.shields.io/badge/platform-android%20|%20ios%20|%20windows%20|%20macos-blue.svg" alt="Platform Support">
-  <img src="https://codecov.io/gh/vento007/tiny_db/graph/badge.svg?token=92U1VQ1FZH" alt="Codecov">
-  <img src="https://img.shields.io/github/issues/vento007/tiny_db.svg" alt="Open Issues">
-  <img src="https://img.shields.io/github/issues-pr/vento007/tiny_db.svg" alt="Pull Requests">
-  <img src="https://img.shields.io/github/contributors/vento007/tiny_db.svg" alt="Contributors">
+  <a href="https://github.com/vento007/tiny_db/issues">
+    <img src="https://img.shields.io/github/issues/vento007/tiny_db.svg" alt="Open Issues">
+  </a>
+  <a href="https://github.com/vento007/tiny_db/pulls">
+    <img src="https://img.shields.io/github/issues-pr/vento007/tiny_db.svg" alt="Pull Requests">
+  </a>
+  <a href="https://github.com/vento007/tiny_db/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/vento007/tiny_db.svg" alt="Contributors">
+  </a>
   <img src="https://img.shields.io/github/last-commit/vento007/tiny_db.svg" alt="Last Commit">
 </p>
 
@@ -49,58 +38,219 @@ print(results); // [{name: John, age: 22}]
 
 </div>
 
-# Tiny DB
+## Quick Preview
 
-## Overview
+```dart
+import 'package:tiny_db/tiny_db.dart';
 
-**Tiny DB** is a modern, ultra-lightweight NoSQL database for Dart and Flutter, inspired by the beloved [Python TinyDB](https://tinydb.readthedocs.io/en/latest/). With over 80% feature parity and several unique enhancements, it brings the power and flexibility of document-oriented storage to your Dart and Flutter apps—no server required!
+final db = TinyDb(MemoryStorage());
 
-- 🚀 **Feature-rich:** Supports advanced queries, update operations, and deep equality for robust data handling.
-- 🧠 **In-memory & JSON file storage:** Choose blazing-fast ephemeral memory mode or persistent, human-readable JSON file storage—switch at any time.
-- 🔄 **Familiar, expressive API:** Inspired by Python TinyDB, but fully Dart-idiomatic and enhanced for Dart and Flutter developers.
-- 🎯 **Embeddable & portable:** Works everywhere Dart or Flutter runs. In-memory mode is pure Dart (no native code). JSON file storage for Flutter apps uses the standard `path_provider` plugin for safe device storage.
+await db.insert({'name': 'Alice', 'age': 30, 'city': 'NYC'});
+await db.insert({'name': 'Bob', 'age': 25, 'city': 'NYC'});
 
-Whether you need a simple embedded database for prototyping, testing, or production apps, Tiny DB offers a clean, intuitive, and powerful solution.
+final nycUsers = await db.defaultTable.search(where('city').equals('NYC'));
+print(nycUsers.length); // 2
+```
 
-Wondering how Tiny DB compares to SharedPreferences, Isar, Hive, or SQLite? See our [detailed comparison](doc/comparison.md).
+## The Magic
+
+### Use Case 1: Clean Local Database
+
+```dart
+import 'package:tiny_db/tiny_db.dart';
+
+final db = TinyDb(MemoryStorage());
+
+// Just add your data - plain maps, no schema needed
+await db.insert({'name': 'Alice', 'age': 30, 'city': 'NYC', 'role': 'developer'});
+await db.insert({'name': 'Bob', 'age': 25, 'city': 'SF', 'role': 'designer'});
+await db.insert({'name': 'Charlie', 'age': 35, 'city': 'NYC', 'role': 'developer'});
+
+// Query it like a real database
+final nycDevs = await db.defaultTable.search(
+  where('city').equals('NYC').and(where('role').equals('developer'))
+);
+
+print('NYC developers: ${nycDevs.length}');  // 2
+
+for (final dev in nycDevs) {
+}
+// Alice, age 30
+// Charlie, age 35
+```
+  **Clean. Simple. No schema.**
+
+  > **Try it:** [example/use_case_1_local_db.dart](example/use_case_1_local_db.dart)
+
+  ### Use Case 2: Optional — Fetch API JSON and Query Instantly
+
+  Note: TinyDb is Maps-first and works without any preexisting JSON. You can optionally ingest JSON from APIs or files when needed.
+
+  ```dart
+  import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:tiny_db/tiny_db.dart';
+
+final db = TinyDb(MemoryStorage());
+
+// Fetch JSON from any API
+final response = await http.get(
+  Uri.parse('https://api.github.com/users/vento007/repos')
+);
+final repos = jsonDecode(response.body) as List;
+
+// Make it queryable
+for (final repo in repos) {
+  await db.insert(repo);
+}
+
+// Query nested data, complex conditions - instantly
+final dartPackages = await db.defaultTable.search(
+  where('language').equals('Dart').and(where('stargazers_count').greaterThan(3))
+);
+
+print('Found ${dartPackages.length} popular Dart packages!');
+for (final pkg in dartPackages) {
+  print('${pkg['name']}: ${pkg['stargazers_count']}');
+}
+// flexible_tree_layout: 6
+// riverpod_mvcs_example: 5
+// tiny_db: 4
+```
+
+
+## What is tiny_db?
+
+  A lightweight, document-oriented NoSQL database for Dart & Flutter. Think of it as **SQLite for JSON** - powerful queries without the SQL.
+
+- **Instant Queries**: Insert Maps and query immediately; optionally ingest JSON from APIs or files
+- **No Schema**: Works with any JSON structure - dynamic and flexible
+- **20+ Query Operators**: Nested paths, regex, logical operators, list operations
+- **Dual Storage**: In-memory (fast) or persistent JSON files (human-readable)
+- **Pure Dart**: Works on mobile, desktop, web, and server
+- **Battle-Tested**: 264+ automated tests, 80%+ feature parity with Python TinyDB
+{{ ... }}
 
 ## Table of Contents
 
-- [Features](#features)
+- [Real-World Use Cases](#real-world-use-cases)
 - [Installation](#installation)
-- [Quick Start](#quick-start)
-- [API Overview](#api-overview)
-- [Advanced Usage](#advanced-usage)
-- [List & Update Operations](#list--update-operations)
+- [Quick Start Examples](#quick-start-examples)
+  - [Remote API Caching](#1-remote-api-caching)
+  - [Basic CRUD Operations](#2-basic-crud-operations)
+  - [Persistent Storage](#3-persistent-storage)
+- [Complete Query Guide](#complete-query-guide)
+- [Complete Update Operations](#complete-update-operations)
+- [Advanced Examples](#advanced-examples)
+  - [Nested Path Queries](#nested-path-queries)
+  - [Complex Logical Conditions](#complex-logical-conditions)
+  - [List Operations](#list-operations)
+  - [Regex Searches](#regex-searches)
+  - [Custom Test Functions](#custom-test-functions)
 - [Storage Backends](#storage-backends)
-- [Dependency Injection & App Integration](#dependency-injection--app-integration)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [Roadmap](#roadmap)
+- [API Reference](#api-reference)
+- [Practical Patterns](#practical-patterns)
+- [Examples Index](#examples-index)
+- [Comparison with Alternatives](#comparison-with-alternatives)
 - [Credits](#credits)
 - [License](#license)
-- [Comparisons vs SharedPreferences, Isar, Hive, SQLite](#comparisons)
 
-<br>
+## Real-World Use Cases
 
----
+### App Data & User Settings
+Store local app data with powerful queries:
+```dart
+final db = TinyDb(MemoryStorage());
 
-# Features
+// User preferences with nested data - just insert!
+await db.insert({
+  'theme': 'dark',
+  'notifications': {
+    'email': true,
+    'push': false,
+    'frequency': 'daily'
+  },
+  'features': ['premium', 'beta']
+});
 
-- Document-oriented, schema-free data storage
-- Powerful query language (`where`, logical operators, deep matching)
-- Advanced update operations: `push`, `pull`, `pop`, `addUnique` (deep equality)
-- Multiple storage backends: In-memory (pure Dart), JSON file (pretty-print, dirs)
-- Batch insert, upsert, and multi-table support
-- Defensive copying for safe list/mutation operations
-- Portable: Dart & Flutter (mobile, desktop, server, CLI)
-- 200+ automated tests for reliability
+// Query nested settings
+final emailEnabled = await db.defaultTable.get(
+  where('notifications.email').equals(true)
+);
+```
 
-<br>
+### Local Data Storage
+Perfect for to-do apps, note apps, local caches:
+```dart
+final db = TinyDb(JsonStorage('tasks.json'));
 
----
+// Store tasks - simple insert
+await db.insert({
+  'title': 'Finish report',
+  'priority': 'high',
+  'tags': ['work', 'urgent'],
+  'dueDate': '2025-10-15'
+});
 
-# Installation
+// Find high-priority tasks
+final urgentTasks = await db.defaultTable.search(
+  where('priority').equals('high')
+    .and(where('tags').anyInList(['urgent']))
+);
+```
+
+### Game State & Progress
+Track player data, inventory, achievements:
+```dart
+final db = TinyDb(JsonStorage('game_save.json'));
+
+// Player inventory - just add it
+await db.insert({
+  'itemId': 'sword_001',
+  'name': 'Legendary Sword',
+  'stats': {'damage': 150, 'durability': 100},
+  'equipped': true
+});
+
+// Find all equipped legendary items
+final equipped = await db.defaultTable.search(
+  where('equipped').equals(true)
+    .and(where('name').search('Legendary'))
+);
+```
+
+### Testing & Development
+Mock database behavior with fixtures:
+```dart
+// Load test data
+final db = TinyDb(MemoryStorage());
+await db.insertMultiple([
+  {'role': 'admin', 'name': 'Alice'},
+  {'role': 'user', 'name': 'Bob'}
+]);
+
+// Test your business logic
+final admins = await db.search(where('role').equals('admin'));
+expect(admins, hasLength(1));
+```
+
+### Bonus: API Data (Optional!)
+And yes, you can also fetch and query remote JSON:
+```dart
+// Fetch from any API
+final response = await http.get(Uri.parse('https://api.example.com/data'));
+final data = jsonDecode(response.body) as List;
+
+// Make it queryable
+for (final item in data) {
+  await db.insert(item);
+}
+
+// Query API data offline
+final filtered = await db.search(where('category').equals('electronics'));
+```
+
+## Installation
 
 Add to your project:
 
@@ -108,11 +258,11 @@ Add to your project:
 flutter pub add tiny_db
 ```
 
-Or add to your `pubspec.yaml`:
+Or add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  tiny_db: ^0.9
+  tiny_db: ^0.9.2
 ```
 
 Then run:
@@ -121,650 +271,947 @@ Then run:
 flutter pub get
 ```
 
-<br>
+## Quick Start Examples
 
----
+### 1. Remote API Caching
 
-# Quick Start
+Fetch and query data from any HTTP API:
 
 ```dart
-// Always remember to properly initialize and close your database
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:tiny_db/tiny_db.dart';
 
 Future<void> main() async {
-  // Create the database
+  // Fetch repos from GitHub API
+  final response = await http.get(
+    Uri.parse('https://api.github.com/users/dart-lang/repos')
+  );
+  final repos = jsonDecode(response.body) as List<dynamic>;
+
+  // Create database and store repos
   final db = TinyDb(MemoryStorage());
-  
   try {
-    // Use the database
-    await db.insert({'name': 'John', 'age': 30});
-    final results = await db.search(where('name').equals('John'));
-    print(results);
+    final table = db.table('repos');
+    await table.insertMultiple(
+      repos.cast<Map<String, dynamic>>()
+    );
+
+    // Query: Find popular Dart repositories
+    final popular = await table.search(
+      where('language').equals('Dart')
+        .and(where('stargazers_count').greaterThan(500))
+    );
+
+    print('Found ${popular.length} popular Dart repos:');
+    for (final repo in popular) {
+      print('  - ${repo['name']}: ${repo['stargazers_count']}');
+    }
+
+    // Query: Find recently updated repos
+    final recentDate = DateTime.now().subtract(Duration(days: 30));
+    final recent = await table.search(
+      where('updated_at').test(
+        (value) => DateTime.parse(value).isAfter(recentDate)
+      )
+    );
+
+    print('\nRecently updated: ${recent.length} repos');
+
+    // Query: Archived vs active
+    final archived = await table.count(where('archived').equals(true));
+    final active = await table.count(where('archived').equals(false));
+    print('\nArchived: $archived, Active: $active');
+
   } finally {
-    // Always close the database when done
     await db.close();
   }
 }
 ```
 
-> **Important**: Always call `db.close()` when you're done with the database to properly release resources, especially when using JsonStorage.
+See [example/remote_api_example.dart](example/remote_api_example.dart) for the complete example.
 
-<br>
+### 2. Basic CRUD Operations
 
----
-
-# API Overview
-
-### Core Classes
-
-- **TinyDb**  
-  Main database entry point.  
-  - `TinyDb(Storage backend)`  
-  - `table(String name)` → Table  
-  - `defaultTable`  
-  - `close()` - **Important**: Always call this when done with the database  
-  - `truncate()`, `tables()`, `all()`, `length`, `isEmpty`, `isNotEmpty`, etc.
-  - **Note:** `truncate()` only affects the default table. To clear other tables, call `truncate()` on the respective Table instance, or use `dropTables()` to remove all tables.
-
-- **Table**  
-  Represents a collection of documents.  
-  - `insert(Map doc)`  
-  - `insertMultiple(List<Map> docs)`  
-  - `upsert(Map doc, QueryCondition condition)`  
-  - `update(UpdateOperations ops, QueryCondition condition)`  
-  - `search(QueryCondition condition)`  
-  - `get(QueryCondition condition)`  
-  - `getById(DocumentId id)`  
-  - `remove(QueryCondition condition)`  
-  - `all()`, `length`, `truncate()`, `containsId(id)`
-
-- **Query & QueryCondition**  
-  Build expressive queries.  
-  - `where('field').equals(value)`  
-  - Logical operators: `.and()`, `.or()`, `.not()`  
-  - List/collection queries: `.anyInList([...])`, `.allInList([...])`, etc.
-
-- **UpdateOperations**  
-  Chainable update helpers for document mutation:  
-  - `.push(field, value)`  
-  - `.pull(field, value)`  
-  - `.pop(field)`  
-  - `.addUnique(field, value)`  
-  - `.set(field, value)`  
-  - `.delete(field)`  
-  - `.increment(field, amount)`, `.decrement(field, amount)`
-
-- **Storage Backends**  
-  - `MemoryStorage()` (pure Dart, in-memory)
-  - `JsonStorage(path, {indentAmount, createDirs})` (persistent, file-based)
-
-### Example
+Core database operations - Create, Read, Update, Delete:
 
 ```dart
-final db = TinyDb(MemoryStorage());
-final users = db.table('users');
+import 'package:tiny_db/tiny_db.dart';
 
-// Insert
-await users.insert({'name': 'Alice', 'age': 30});
+Future<void> main() async {
+  final db = TinyDb(MemoryStorage());
 
-// Query
-final result = await users.search(where('name').equals('Alice'));
+  try {
+    // CREATE: Insert documents
+    final id1 = await db.insert({'name': 'Alice', 'age': 30, 'city': 'NYC'});
+    final id2 = await db.insert({'name': 'Bob', 'age': 25, 'city': 'SF'});
 
-// Update
-await users.update(
-  UpdateOperations().increment('age', 1),
-  where('name').equals('Alice'),
+    // Batch insert
+    final ids = await db.insertMultiple([
+      {'name': 'Charlie', 'age': 35, 'city': 'NYC'},
+      {'name': 'Diana', 'age': 28, 'city': 'LA'}
+    ]);
+
+    // READ: Query documents
+    final nycUsers = await db.search(where('city').equals('NYC'));
+    print('NYC users: ${nycUsers.length}'); // 2
+
+    final youngUsers = await db.search(where('age').lessThan(30));
+    print('Young users: ${youngUsers.length}'); // 2
+
+    // Get by ID
+    final alice = await db.getById(id1);
+    print('Alice: ${alice?['name']}, ${alice?['age']}');
+
+    // Get first match
+    final firstNyc = await db.defaultTable.get(where('city').equals('NYC'));
+    print('First NYC user: ${firstNyc?['name']}');
+
+    // Count matches
+    final count = await db.defaultTable.count(where('age').greaterThan(27));
+    print('Users over 27: $count'); // 3
+
+    // UPDATE: Modify documents
+    await db.defaultTable.update(
+      UpdateOperations().increment('age', 1),
+      where('city').equals('NYC')
+    );
+
+    final aliceUpdated = await db.getById(id1);
+    print('Alice new age: ${aliceUpdated?['age']}'); // 31
+
+    // Complex update
+    await db.defaultTable.update(
+      UpdateOperations()
+        .set('verified', true)
+        .push('tags', 'premium'),
+      where('age').greaterThanOrEquals(30)
+    );
+
+    // DELETE: Remove documents
+    await db.defaultTable.remove(where('city').equals('LA'));
+
+    print('Remaining users: ${await db.length}'); // 3
+
+    // Get all documents
+    final all = await db.all();
+    for (final doc in all) {
+      print('${doc['name']} (${doc['age']}) from ${doc['city']}');
+    }
+
+  } finally {
+    await db.close();
+  }
+}
+```
+
+### 3. Persistent Storage
+
+Save data to a JSON file that persists across app restarts:
+
+```dart
+import 'dart:io';
+import 'package:tiny_db/tiny_db.dart';
+import 'package:path_provider/path_provider.dart'; // For Flutter apps
+
+Future<void> main() async {
+  // For Flutter: Use app documents directory
+  // final appDir = await getApplicationDocumentsDirectory();
+  // final dbPath = '${appDir.path}/my_app.json';
+
+  // For pure Dart: Use any path
+  final dbPath = 'data/my_database.json';
+
+  final db = TinyDb(
+    JsonStorage(
+      dbPath,
+      createDirs: true,    // Auto-create parent directories
+      indentAmount: 2,     // Pretty-print with 2-space indent
+    )
+  );
+
+  try {
+    // Insert data - automatically saved to file
+    await db.insert({
+      'type': 'note',
+      'title': 'Shopping List',
+      'items': ['Milk', 'Eggs', 'Bread'],
+      'created': DateTime.now().toIso8601String()
+    });
+
+    // Use named tables for organization
+    final settings = db.table('settings');
+    await settings.insert({
+      'theme': 'dark',
+      'notifications': true,
+      'language': 'en'
+    });
+
+    final users = db.table('users');
+    await users.insert({
+      'username': 'alice',
+      'email': 'alice@example.com',
+      'preferences': {
+        'fontSize': 14,
+        'colorScheme': 'blue'
+      }
+    });
+
+    // Query persisted data
+    final notes = await db.search(where('type').equals('note'));
+    print('Found ${notes.length} notes');
+
+    // The JSON file is human-readable!
+    print('\nJSON file contents:');
+    print(File(dbPath).readAsStringSync());
+
+    // List all tables
+    final tables = await db.tables();
+    print('\nTables: ${tables.join(', ')}');
+
+  } finally {
+    await db.close(); // Important: Save and release file locks
+  }
+}
+```
+
+**JSON file structure** (`my_database.json`):
+```json
+{
+  "_default": {
+    "1": {
+      "type": "note",
+      "title": "Shopping List",
+      "items": ["Milk", "Eggs", "Bread"],
+      "created": "2025-10-03T10:30:00.000"
+    }
+  },
+  "settings": {
+    "1": {
+      "theme": "dark",
+      "notifications": true,
+      "language": "en"
+    }
+  },
+  "users": {
+    "1": {
+      "username": "alice",
+      "email": "alice@example.com",
+      "preferences": {
+        "fontSize": 14,
+        "colorScheme": "blue"
+      }
+    }
+  }
+}
+```
+
+## Complete Query Guide
+
+All 20+ query methods with examples:
+
+| Method | Example | Description |
+|--------|---------|-------------|
+| **Equality** | | |
+| `equals(value)` | `where('age').equals(30)` | Exact match |
+| `notEquals(value)` | `where('status').notEquals('deleted')` | Not equal to value |
+| **Existence** | | |
+| `exists()` | `where('email').exists()` | Field exists (even if null) |
+| `notExists()` | `where('optionalField').notExists()` | Field doesn't exist |
+| **Null Checks** | | |
+| `isNull()` | `where('deletedAt').isNull()` | Field is null |
+| `isNotNull()` | `where('email').isNotNull()` | Field is not null |
+| **Numeric Comparisons** | | |
+| `greaterThan(n)` | `where('price').greaterThan(100)` | Greater than number |
+| `lessThan(n)` | `where('age').lessThan(18)` | Less than number |
+| `greaterThanOrEquals(n)` | `where('score').greaterThanOrEquals(90)` | >= number |
+| `lessThanOrEquals(n)` | `where('quantity').lessThanOrEquals(10)` | <= number |
+| **String/Regex** | | |
+| `matches(regex)` | `where('email').matches(r'.*@gmail\.com')` | Full regex match |
+| `search(regex)` | `where('name').search(r'john', caseSensitive: false)` | Partial match (contains) |
+| **Custom Tests** | | |
+| `test(fn)` | `where('date').test((v) => DateTime.parse(v).isAfter(...))` | Custom function test |
+| **List Operations** | | |
+| `anyInList([values])` | `where('tags').anyInList(['urgent', 'important'])` | List contains any of these |
+| `allInList([values])` | `where('tags').allInList(['reviewed', 'approved'])` | List contains all of these |
+| `anyElementSatisfies(cond)` | `where('scores').anyElementSatisfies(where('value').greaterThan(90))` | Any element matches |
+| `allElementsSatisfy(cond)` | `where('items').allElementsSatisfy(where('status').equals('ready'))` | All elements match |
+| **Logical Operators** | | |
+| `.and(condition)` | `where('age').greaterThan(18).and(where('verified').equals(true))` | AND logic |
+| `.or(condition)` | `where('role').equals('admin').or(where('role').equals('moderator'))` | OR logic |
+| `.not()` | `where('status').equals('active').not()` | NOT logic |
+
+### Nested Path Examples
+
+Access nested fields using dot notation:
+
+```dart
+// Document structure
+await db.insert({
+  'user': {
+    'profile': {
+      'name': 'Alice',
+      'address': {
+        'city': 'NYC',
+        'zip': '10001'
+      }
+    },
+    'settings': {
+      'notifications': true
+    }
+  }
+});
+
+// Query nested fields
+final nycUsers = await db.search(
+  where('user.profile.address.city').equals('NYC')
 );
 
-// Remove
-await users.remove(where('age').equals(31));
+final notificationsOn = await db.search(
+  where('user.settings.notifications').equals(true)
+);
 ```
 
-### Notes
+## Complete Update Operations
 
-- All operations are async (`Future`-based).
-- Data is always deeply copied for safety.
-- Table names are strings; documents are `Map<String, dynamic>`.
-- Querying and update APIs are chainable and composable.
-- **Resource Management**: Always call `db.close()` when done with the database to properly release resources.
-<br>
+All 8 update operations with examples:
 
----
+| Operation | Example | Description |
+|-----------|---------|-------------|
+| **Field Operations** | | |
+| `set(path, value)` | `.set('status', 'active')` | Set field value |
+| `delete(path)` | `.delete('temporaryField')` | Remove field |
+| **Numeric Operations** | | |
+| `increment(path, n)` | `.increment('views', 1)` | Increment number field |
+| `decrement(path, n)` | `.decrement('stock', 5)` | Decrement number field |
+| **List Operations** | | |
+| `push(path, value)` | `.push('tags', 'new-tag')` | Append to list |
+| `pull(path, value)` | `.pull('tags', 'old-tag')` | Remove all instances (deep equality) |
+| `pop(path)` | `.pop('items')` | Remove last element |
+| `addUnique(path, value)` | `.addUnique('categories', 'premium')` | Add if not exists (deep equality) |
 
-# Advanced Usage
+### Chaining Operations
 
-Below are a few advanced patterns and real-world use cases. For a comprehensive set of examples, see [More Examples](doc/examples.md).
-
-### Multi-Table Usage
+Combine multiple operations in one update:
 
 ```dart
-final db = TinyDb(MemoryStorage());
-final users = db.table('users');
-final products = db.table('products');
-
-await users.insert({'username': 'alice', 'active': true});
-await products.insert({'name': 'Widget', 'price': 9.99});
+await db.defaultTable.update(
+  UpdateOperations()
+    .set('lastModified', DateTime.now().toIso8601String())
+    .increment('viewCount', 1)
+    .push('history', {'action': 'viewed', 'timestamp': DateTime.now()})
+    .addUnique('tags', 'popular'),
+  where('id').equals(123)
+);
 ```
 
-### Batch Insert & Upsert
+### Nested Path Updates
+
+Modify nested fields using dot notation:
 
 ```dart
-await users.insertMultiple([
-  {'username': 'bob', 'active': false},
-  {'username': 'charlie', 'active': true},
+await db.defaultTable.update(
+  UpdateOperations()
+    .set('user.profile.name', 'Alice Smith')
+    .increment('user.stats.loginCount', 1)
+    .push('user.notifications', {
+      'type': 'info',
+      'message': 'Welcome back!'
+    }),
+  where('userId').equals(42)
+);
+```
+
+## Advanced Examples
+
+### Nested Path Queries
+
+```dart
+// Complex nested structure
+await db.insert({
+  'order': {
+    'id': 'ORD-001',
+    'customer': {
+      'name': 'Alice',
+      'address': {
+        'city': 'New York',
+        'state': 'NY',
+        'zip': '10001'
+      }
+    },
+    'items': [
+      {'product': 'Widget', 'price': 29.99, 'quantity': 2},
+      {'product': 'Gadget', 'price': 49.99, 'quantity': 1}
+    ],
+    'total': 109.97
+  }
+});
+
+// Query nested customer data
+final nyOrders = await db.search(
+  where('order.customer.address.state').equals('NY')
+);
+
+// Query by total amount
+final largeOrders = await db.search(
+  where('order.total').greaterThan(100)
+);
+```
+
+### Complex Logical Conditions
+
+```dart
+// Multiple AND conditions
+final results = await db.search(
+  where('age').greaterThanOrEquals(18)
+    .and(where('age').lessThan(65))
+    .and(where('verified').equals(true))
+    .and(where('status').equals('active'))
+);
+
+// OR with nested AND
+final vipUsers = await db.search(
+  where('role').equals('admin')
+    .or(
+      where('subscriptionLevel').equals('premium')
+        .and(where('yearsActive').greaterThan(5))
+    )
+);
+
+// NOT logic
+final incompleteProfiles = await db.search(
+  where('profileComplete').equals(true).not()
+);
+```
+
+### List Operations
+
+```dart
+// Insert documents with lists
+await db.insertMultiple([
+  {'name': 'Alice', 'tags': ['developer', 'flutter', 'senior']},
+  {'name': 'Bob', 'tags': ['designer', 'ui-ux']},
+  {'name': 'Charlie', 'tags': ['developer', 'backend', 'junior']}
 ]);
 
-await users.upsert(
-  {'username': 'alice', 'active': false},
-  where('username').equals('alice'),
+// Find documents where list contains ANY of these values
+final devOrDesigner = await db.search(
+  where('tags').anyInList(['developer', 'designer'])
+);
+print('Developers or designers: ${devOrDesigner.length}'); // 3
+
+// Find documents where list contains ALL of these values
+final seniorFlutter = await db.search(
+  where('tags').allInList(['flutter', 'senior'])
+);
+print('Senior Flutter devs: ${seniorFlutter.length}'); // 1
+
+// Complex list element matching
+await db.insert({
+  'project': 'Website',
+  'tasks': [
+    {'name': 'Design', 'status': 'done', 'hours': 20},
+    {'name': 'Development', 'status': 'in-progress', 'hours': 40},
+    {'name': 'Testing', 'status': 'pending', 'hours': 10}
+  ]
+});
+
+// Find projects with any completed tasks
+final hasCompletedTasks = await db.search(
+  where('tasks').anyElementSatisfies(
+    where('status').equals('done')
+  )
+);
+
+// Find projects where all tasks are completed
+final fullyCompleted = await db.search(
+  where('tasks').allElementsSatisfy(
+    where('status').equals('done')
+  )
 );
 ```
 
-### Complex Queries
+### Regex Searches
 
 ```dart
-final results = await users.search(
-  where('active').equals(true).and(where('username').anyInList(['alice', 'charlie']))
+await db.insertMultiple([
+  {'email': 'alice@gmail.com', 'name': 'Alice'},
+  {'email': 'bob@company.com', 'name': 'Bob'},
+  {'email': 'charlie@gmail.com', 'name': 'Charlie'}
+]);
+
+// Full regex match (entire string must match)
+final gmailUsers = await db.search(
+  where('email').matches(r'^[a-z]+@gmail\.com$')
+);
+print('Gmail users: ${gmailUsers.length}'); // 2
+
+// Partial match (search/contains)
+final hasGmail = await db.search(
+  where('email').search(r'gmail', caseSensitive: false)
+);
+
+// Case-insensitive name search
+final nameContainsBob = await db.search(
+  where('name').search(r'bob', caseSensitive: false)
 );
 ```
 
-### Advanced Update Operations
+### Custom Test Functions
 
 ```dart
-await users.update(
-  UpdateOperations()
-    .push('tags', 'newbie')
-    .addUnique('roles', 'admin')
-    .increment('loginCount', 1),
-  where('username').equals('alice'),
+// Date comparisons
+final recentDocs = await db.search(
+  where('createdAt').test((value) {
+    final date = DateTime.parse(value as String);
+    final thirtyDaysAgo = DateTime.now().subtract(Duration(days: 30));
+    return date.isAfter(thirtyDaysAgo);
+  })
+);
+
+// Complex validation
+final validEmails = await db.search(
+  where('email').test((value) {
+    if (value is! String) return false;
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+  })
+);
+
+// Numeric ranges with custom logic
+final midRange = await db.search(
+  where('score').test((value) {
+    if (value is! num) return false;
+    return value >= 40 && value <= 60;
+  })
 );
 ```
 
-### Model Serialization
+## Storage Backends
 
-```dart
-class Product {
-  // ... fields ...
+### Comparison: MemoryStorage vs JsonStorage
 
-  factory Product.fromJson(Map<String, dynamic> json) => /* ... */;
-  Map<String, dynamic> toJson() => /* ... */;
-}
-
-// Store
-await products.insert(product.toJson());
-
-// Retrieve
-final docs = await products.search(where('price').greaterThan(5));
-final productList = docs.map(Product.fromJson).toList();
-```
-
----
-
-**See [doc/examples.md](doc/examples.md) for a full list of advanced and edge-case examples.**
-
-<br>
-
----
-
-# List & Update Operations
-
-Tiny DB provides robust list mutation and update operations, all with deep equality and defensive copying for safe, predictable behavior.
-
-- **addUnique(field, value):** Add to a list only if the value (by deep equality) isn't already present.
-- **push(field, value):** Append to a list.
-- **pull(field, value):** Remove all occurrences of a value from a list (deep equality).
-- **pop(field):** Remove the last element from a list.
-
-**Deep equality** means:
-- Lists: Equal if all elements are deeply equal.
-- Maps: Equal if all keys and values are deeply equal.
-- Primitives: Standard `==`.
-
-**Defensive copying** ensures all list operations create a deep copy before mutation, preventing accidental reference bugs.
-
-### Example
-
-```dart
-// Add unique value to a list
-await table.update(UpdateOperations().addUnique('tags', 'flutter'), where('name').equals('Alice'));
-
-// Remove all occurrences of a value
-await table.update(UpdateOperations().pull('tags', 'old'), where('name').equals('Alice'));
-```
-
-For more details and advanced examples, see  
-[doc/deep_equality_and_add_unique.md](doc/deep_equality_and_add_unique.md)
-
-
-<br>
-
----
-
-# Storage Backends
-
-Tiny DB offers two storage backends to suit different needs:
+| Feature | MemoryStorage | JsonStorage |
+|---------|---------------|-------------|
+| **Persistence** | Lost on app restart | Saved to disk |
+| **Speed** | Fastest | Fast (with mutex protection) |
+| **File I/O** | None | Yes |
+| **Dependencies** | Pure Dart | Uses `dart:io` |
+| **Best For** | Testing, caching, temp data | Production apps, settings |
+| **Human Readable** | No (in-memory) | Yes (JSON format) |
+| **Multi-process** | No | No (file-based) |
 
 ### MemoryStorage
 
 ```dart
 final db = TinyDb(MemoryStorage());
-```
 
-- **Pure Dart**: No native dependencies, works on all platforms
-- **In-memory only**: Data is lost when the app restarts
-- **Fast**: All operations happen in memory
-- **Great for**: Testing, prototyping, temporary caches, and ephemeral data
+// Fast, ephemeral storage
+// Perfect for:
+// - Unit tests
+// - Temporary caching
+// - Development/prototyping
+// - Session data
+
+await db.close(); // No file cleanup needed
+```
 
 ### JsonStorage
 
 ```dart
-final db = TinyDb(JsonStorage('path/to/db.json', 
-  indentAmount: 2,  // Pretty-print with 2-space indentation
-  createDirs: true, // Create parent directories if they don't exist
-));
+final db = TinyDb(
+  JsonStorage(
+    'path/to/database.json',
+    createDirs: true,    // Create parent directories automatically
+    indentAmount: 2,     // Pretty-print (null for compact)
+  )
+);
+
+// Persistent storage
+// Perfect for:
+// - User data
+// - App settings
+// - Offline-first apps
+// - Human-readable data inspection
+
+await db.close(); // Important: Ensures data is flushed to disk
 ```
 
-- **Persistent**: Data is saved to a JSON file
-- **Human-readable**: JSON format is easy to inspect and edit
-- **Flutter dependency**: Uses `path_provider` plugin for safe file access on mobile
-- **Configuration options**:
-  - `indentAmount`: Controls JSON formatting (null for compact output)
-  - `createDirs`: Automatically creates parent directories
+### Platform-Specific Paths
 
-#### JSON File Structure
-
-The JSON storage format organizes data by tables, with document IDs as keys:
-
-```json
-{
-  "_default": {                     // Default table
-    "1": {                         // Document ID 1
-      "type": "note",
-      "title": "Shopping List",
-      "items": ["Milk", "Eggs", "Bread"]
-    },
-    "2": { ... }                   // Document ID 2
-  },
-  "settings": {                    // Named table "settings"
-    "1": {
-      "theme": "dark",
-      "notifications": true,
-      "preferences": {
-        "fontSize": 14,
-        "language": "en",
-        "autoSave": true
-      }
-    }
-  },
-  "profiles": {                    // Named table "profiles"
-    "1": {
-      "username": "alice",
-      "email": "alice@example.com",
-      "tags": ["admin", "verified", "active"]
-    },
-    "2": { ... }                   // Another document
-  }
-}
-```
-
-See [json_storage_example.dart](example/json_storage_example.dart) for a complete example.
-
-### Platform Considerations
-
-- **Flutter apps**: Use `path_provider` to get the correct app storage directory:
-
-  ```dart
-  import 'package:path_provider/path_provider.dart';
-  
-  Future<void> main() async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final dbPath = '${appDir.path}/my_db.json';
-    final db = TinyDb(JsonStorage(dbPath));
-    // ...
-  }
-  ```
-
-- **Pure Dart (CLI, server)**: Use direct file paths:
-
-  ```dart
-  final db = TinyDb(JsonStorage('data/my_db.json', createDirs: true));
-  ```
-
-<br>
-
----
-
-# Dependency Injection & App Integration
-
-Here are some approaches to integrate Tiny DB into your application architecture:
-
-### Simple Global Instance
-
-For smaller apps or prototypes, a global instance can be simple and effective:
-
+**Flutter (Mobile/Desktop):**
 ```dart
-// db_provider.dart
-import 'package:tiny_db/tiny_db.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DbProvider {
-  static TinyDb? _instance;
-  
-  static Future<TinyDb> get instance async {
-    if (_instance == null) {
-      final appDir = await getApplicationDocumentsDirectory();
-      final dbPath = '${appDir.path}/app_database.json';
-      _instance = TinyDb(JsonStorage(dbPath, createDirs: true));
-    }
-    return _instance!;
-  }
+Future<TinyDb> createDatabase() async {
+  final appDir = await getApplicationDocumentsDirectory();
+  return TinyDb(
+    JsonStorage('${appDir.path}/app_data.json', createDirs: true)
+  );
 }
 ```
 
-Then in your main.dart file, initialize it early:
-
+**Pure Dart (CLI/Server):**
 ```dart
-// main.dart
-import 'package:flutter/material.dart';
-import 'db_provider.dart';
+// Relative path
+final db = TinyDb(JsonStorage('data/db.json', createDirs: true));
 
-Future<void> main() async {
-  // Ensure Flutter is initialized
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize the database early
-  final db = await DbProvider.instance;
-  
-  // Now you can run your app
-  runApp(MyApp(db: db));
-}
+// Absolute path
+final db = TinyDb(JsonStorage('/var/app/database.json'));
 
-class MyApp extends StatelessWidget {
-  final TinyDb db;
-  
-  const MyApp({super.key, required this.db});
-  
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TinyDB Demo',
-      home: HomeScreen(db: db),
-    );
-  }
-}
-
-// Usage in any screen or service:
-class HomeScreen extends StatelessWidget {
-  final TinyDb db;
-  
-  const HomeScreen({super.key, required this.db});
-  
-  Future<void> _addUser() async {
-    final users = db.table('users');
-    await users.insert({'name': 'Alice', 'joined': DateTime.now().toIso8601String()});
-  }
-  
-  // Rest of your widget...
-}
+// Temp directory
+import 'dart:io';
+final tempDb = TinyDb(
+  JsonStorage('${Directory.systemTemp.path}/temp_db.json')
+);
 ```
 
-### Using get_it (Service Locator)
+### Performance Characteristics
 
-For more structured dependency injection, [get_it](https://pub.dev/packages/get_it) is a popular choice:
+- **Insert**: O(1) - direct ID assignment
+- **Query (simple)**: O(n) - full table scan
+- **Query (by ID)**: O(1) - direct lookup
+- **Update**: O(n) - scan + modify matched docs
+- **Delete**: O(n) - scan + remove matched docs
+- **Storage**: All operations protected by mutex for thread safety (JsonStorage)
+
+For large datasets (10k+ documents), consider:
+- Indexing strategies (future plugin support)
+- Filtering before insertion
+- Batch operations where possible
+- MemoryStorage for read-heavy workloads
+
+## API Reference
+
+### TinyDb Class
 
 ```dart
-// service_locator.dart
-import 'package:tiny_db/tiny_db.dart';
+final db = TinyDb(storage);
+```
+
+**Methods:**
+- `table(String name)` → `Table` - Get or create named table
+- `defaultTable` → `Table` - Get default table (`_default`)
+- `tables()` → `Future<Set<String>>` - List all table names
+- `dropTable(String name)` → `Future<bool>` - Delete a table
+- `dropTables()` → `Future<void>` - Delete all tables
+- `close()` → `Future<void>` - Close database and release resources
+
+**Default table proxy methods** (operate on `_default` table):
+- `insert(doc)`, `insertMultiple(docs)`, `all()`, `getById(id)`, `length`, `isEmpty`, `isNotEmpty`, `truncate()`
+
+### Table Class
+
+**CRUD Operations:**
+- `insert(Map<String, dynamic> doc)` → `Future<int>` - Insert document, returns ID
+- `insertMultiple(List<Map<String, dynamic>> docs)` → `Future<List<int>>` - Batch insert
+- `search(QueryCondition condition)` → `Future<List<Map<String, dynamic>>>` - Find all matches
+- `get(QueryCondition condition)` → `Future<Map<String, dynamic>?>` - Find first match
+- `getById(int id)` → `Future<Map<String, dynamic>?>` - Get by ID
+- `update(UpdateOperations ops, QueryCondition condition)` → `Future<List<int>>` - Update matches, returns IDs
+- `upsert(Map doc, QueryCondition condition)` → `Future<List<int>>` - Update or insert
+- `remove(QueryCondition condition)` → `Future<List<int>>` - Delete matches, returns IDs
+- `removeByIds(List<int> ids)` → `Future<List<int>>` - Delete by IDs
+
+**Utility Methods:**
+- `all()` → `Future<List<Map>>` - Get all documents
+- `length` → `Future<int>` - Count documents
+- `isEmpty` / `isNotEmpty` → `Future<bool>` - Check if empty
+- `truncate()` → `Future<void>` - Clear all documents
+- `count(QueryCondition condition)` → `Future<int>` - Count matches
+- `contains(QueryCondition condition)` → `Future<bool>` - Check if any match exists
+- `containsId(int id)` → `Future<bool>` - Check if ID exists
+
+### Query Class
+
+**Factory:**
+- `where(String fieldPath)` → `Query` - Create query for field path (supports dot notation)
+
+**Comparison Methods:**
+- `equals(value)` - Exact match
+- `notEquals(value)` - Not equal
+- `greaterThan(num)` - Greater than (numeric)
+- `lessThan(num)` - Less than (numeric)
+- `greaterThanOrEquals(num)` - >= (numeric)
+- `lessThanOrEquals(num)` - <= (numeric)
+
+**Existence & Null:**
+- `exists()` - Field exists
+- `notExists()` - Field doesn't exist
+- `isNull()` - Field is null
+- `isNotNull()` - Field is not null
+
+**String/Regex:**
+- `matches(String pattern, {bool caseSensitive = true})` - Full regex match
+- `search(String pattern, {bool caseSensitive = true})` - Partial match
+
+**List Operations:**
+- `anyInList(List values)` - List contains any value
+- `allInList(List values)` - List contains all values
+- `anyElementSatisfies(QueryCondition)` - Any element matches
+- `allElementsSatisfy(QueryCondition)` - All elements match
+
+**Custom:**
+- `test(bool Function(dynamic) fn)` - Custom test function
+
+**Logical Operators:**
+- `.and(QueryCondition)` - Logical AND
+- `.or(QueryCondition)` - Logical OR
+- `.not()` - Logical NOT
+
+### UpdateOperations Class
+
+**Field Operations:**
+- `set(String path, dynamic value)` - Set field value
+- `delete(String path)` - Remove field
+
+**Numeric:**
+- `increment(String path, num amount)` - Increment number
+- `decrement(String path, num amount)` - Decrement number
+
+**List Operations:**
+- `push(String path, dynamic value)` - Append to list
+- `pull(String path, dynamic value)` - Remove all instances (deep equality)
+- `pop(String path)` - Remove last element
+- `addUnique(String path, dynamic value)` - Add if not exists (deep equality)
+
+All operations support **nested paths** via dot notation and are **chainable**.
+
+## Practical Patterns
+
+### Model Serialization
+
+```dart
+class User {
+  final String name;
+  final int age;
+  final String email;
+
+  User({required this.name, required this.age, required this.email});
+
+  // Convert to JSON for storage
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'age': age,
+    'email': email,
+  };
+
+  // Create from JSON
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    name: json['name'] as String,
+    age: json['age'] as int,
+    email: json['email'] as String,
+  );
+}
+
+// Usage
+final user = User(name: 'Alice', age: 30, email: 'alice@example.com');
+
+// Store
+final id = await db.table('users').insert(user.toJson());
+
+// Retrieve
+final docs = await db.table('users').search(where('name').equals('Alice'));
+final retrievedUser = User.fromJson(docs.first);
+```
+
+### Dependency Injection with get_it
+
+```dart
 import 'package:get_it/get_it.dart';
+import 'package:tiny_db/tiny_db.dart';
 import 'package:path_provider/path_provider.dart';
 
 final getIt = GetIt.instance;
 
-Future<void> setupServices() async {
-  // Register as a lazy singleton
+Future<void> setupDatabase() async {
   getIt.registerLazySingletonAsync<TinyDb>(() async {
     final appDir = await getApplicationDocumentsDirectory();
-    final dbPath = '${appDir.path}/app_database.json';
-    return TinyDb(JsonStorage(dbPath, createDirs: true));
+    return TinyDb(
+      JsonStorage('${appDir.path}/app_db.json', createDirs: true)
+    );
   });
-  
-  // Initialize the database
+
   await getIt.isReady<TinyDb>();
 }
 
 // In main.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupServices();
+  await setupDatabase();
   runApp(MyApp());
 }
 
-// Usage anywhere in your app
+// Use anywhere
 final db = getIt<TinyDb>();
-final products = db.table('products');
+final users = db.table('users');
 ```
 
-### With Provider or Riverpod
-
-For Flutter apps using Provider or Riverpod:
+### Error Handling
 
 ```dart
-// With Provider
-final dbProvider = Provider<TinyDb>((ref) {
-  final db = TinyDb(MemoryStorage()); // Or JsonStorage
-  ref.onDispose(() => db.close());
-  return db;
-});
+try {
+  final db = TinyDb(JsonStorage('data/db.json', createDirs: true));
 
-// In a widget
-final db = ref.watch(dbProvider);
-```
+  try {
+    await db.insert({'data': 'value'});
+  } on StorageException catch (e) {
+    print('Storage error: ${e.message}');
+  } on CorruptStorageException catch (e) {
+    print('Corrupt database: ${e.message}');
+    // Handle data recovery
+  }
 
-### Closing the Database
-
-**IMPORTANT**: Always close the database when you're done with it, regardless of how it was created. This ensures proper resource cleanup and data integrity.
-
-```dart
-// For global instances
-Future<void> closeDatabase() async {
-  final db = await DbProvider.instance;
+} finally {
   await db.close();
 }
+```
 
-// With get_it, in your app's dispose method
-getIt<TinyDb>().close();
+### Resource Cleanup
 
-// In a stateful widget
-@override
-void dispose() {
-  db.close();
-  super.dispose();
+```dart
+// Always close databases
+Future<void> myFunction() async {
+  final db = TinyDb(JsonStorage('data.json'));
+  try {
+    // Use database
+    await db.insert({'key': 'value'});
+  } finally {
+    await db.close(); // Ensures data is saved and resources released
+  }
 }
 
-// With direct usage, use try/finally
-Future<void> someFunction() async {
-  final db = TinyDb(MemoryStorage());
-  try {
-    // Use the database
-  } finally {
-    await db.close(); // Always called, even if an exception occurs
+// In Flutter widgets
+class MyWidget extends StatefulWidget {
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  late TinyDb db;
+
+  @override
+  void initState() {
+    super.initState();
+    db = TinyDb(MemoryStorage());
+  }
+
+  @override
+  void dispose() {
+    db.close();
+    super.dispose();
   }
 }
 ```
 
-Failure to close the database properly may result in resource leaks or data integrity issues, especially with JsonStorage.
-
-<br>
-
----
-
-# Testing
-
-Tiny DB includes comprehensive tests to help ensure reliability and correctness.
-
-### Running the Tests
-
-To run the full test suite:
-
-```bash
-flutter test
-```
-
-The package includes over 200 automated tests covering core functionality, edge cases, and defensive copying behavior.
-
-> **Note about test warnings**: When running tests, you may see warnings like `Cannot increment field "name" in document. Value is "Alice". Not a number...`. These are expected and intentional - they're part of tests that verify the library correctly handles invalid operations (like trying to increment a string) by warning rather than crashing.
-
-### Common Testing Patterns
-
-When writing tests for your app that uses Tiny DB:
+### Testing Patterns
 
 ```dart
-// 1. Always use MemoryStorage for tests
-setUp(() {
-  db = TinyDb(MemoryStorage());
-});
-
-// 2. Always clean up after tests
-tearDown(() async {
-  await db.close();
-});
-
-// 3. Test document equality with deep comparisons
-test('document equality', () async {
-  final doc = {'nested': {'list': [1, 2, {'key': 'value'}]}};
-  final id = await db.insert(doc);
-  final retrieved = await db.getById(id);
-  
-  // Remove doc_id for comparison
-  retrieved?.remove('doc_id');
-  expect(retrieved, equals(doc)); // Deep equality works automatically
-});
-```
-
-<br>
-
----
-
-# Contributing
-
-Contributions to Tiny DB are welcome and appreciated! This project aims to maintain a high standard of code quality and test coverage.
-
-### Pull Request Guidelines
-
-When submitting a PR, please ensure:
-
-1. **Test Coverage**: All new features or bug fixes include appropriate tests
-2. **Documentation**: Update relevant documentation for any changes
-3. **Code Style**: Follow the existing code style and Dart conventions
-4. **Focused Changes**: Keep PRs focused on a single issue/feature
-
-### Writing Tests
-
-Tiny DB uses Dart's built-in testing framework. Here's a simple example of how to write a test:
-
-```dart
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:tiny_db/tiny_db.dart';
 
 void main() {
   late TinyDb db;
-  
+
   setUp(() {
-    // Use MemoryStorage for tests to avoid file system operations
+    // Use MemoryStorage for tests - fast and isolated
     db = TinyDb(MemoryStorage());
   });
-  
+
   tearDown(() async {
-    // Always clean up after tests
+    // Clean up after each test
     await db.close();
   });
-  
-  test('insert and retrieve document', () async {
-    // Arrange
-    final doc = {'name': 'Test', 'value': 42};
-    
-    // Act
-    final id = await db.insert(doc);
-    final result = await db.getById(id);
-    
-    // Assert
-    expect(result?['name'], equals('Test'));
-    expect(result?['value'], equals(42));
+
+  test('user creation and retrieval', () async {
+    final id = await db.insert({'name': 'Test User', 'role': 'admin'});
+
+    final user = await db.getById(id);
+    expect(user?['name'], 'Test User');
+    expect(user?['role'], 'admin');
   });
-  
-  test('update operations work correctly', () async {
-    // Arrange
-    final id = await db.insert({'tags': ['a', 'b']});
-    
-    // Act
-    await db.update(
-      UpdateOperations().addUnique('tags', 'c'),
-      where('doc_id').equals(id)
+
+  test('query with complex conditions', () async {
+    await db.insertMultiple([
+      {'name': 'Alice', 'age': 25, 'active': true},
+      {'name': 'Bob', 'age': 35, 'active': false},
+      {'name': 'Charlie', 'age': 30, 'active': true}
+    ]);
+
+    final activeUsers = await db.search(
+      where('active').equals(true).and(where('age').greaterThan(26))
     );
-    final result = await db.getById(id);
-    
-    // Assert
-    expect(result?['tags'], containsAll(['a', 'b', 'c']));
+
+    expect(activeUsers.length, 1);
+    expect(activeUsers.first['name'], 'Charlie');
   });
 }
 ```
 
-### Edge Case Testing
+## Examples Index
 
-When fixing bugs or adding features, consider these edge cases:
+Complete working examples in the [`example/`](example/) directory:
 
-- Empty collections/documents
-- Null values and optional fields
-- Deep nesting of objects and arrays
-- Concurrent operations (if applicable)
-- Resource cleanup (especially with JsonStorage)
+**Quick Start Examples:**
+- **[readme_intro_example.dart](example/readme_intro_example.dart)** - The opening example from top of README
+- **[use_case_1_local_db.dart](example/use_case_1_local_db.dart)** - Clean local database usage
+- **[use_case_2_api_query.dart](example/use_case_2_api_query.dart)** - Fetch & query API data
 
-Thank you for contributing to Tiny DB!
-<br>
+**Comprehensive Examples:**
+- **[complete_crud_example.dart](example/complete_crud_example.dart)** - All CRUD operations demo
+- **[model_serialization_example.dart](example/model_serialization_example.dart)** - Using typed models (with [products_model.dart](example/products_model.dart))
+- **[remote_api_example.dart](example/remote_api_example.dart)** - Fetch and query GitHub repos
+- **[weather_api_example.dart](example/weather_api_example.dart)** - Weather API caching pattern
+- **[json_storage_example.dart](example/json_storage_example.dart)** - Persistent JSON storage
+- **[flutter_example/](example/flutter_example/)** - Complete Flutter app
+
+Run any example:
+```bash
+dart run example/use_case_1_local_db.dart
+dart run example/model_serialization_example.dart
+dart run example/complete_crud_example.dart
+```
+
+## Comparison with Alternatives
+
+| Feature | tiny_db | SharedPreferences | Hive | SQLite | Isar |
+|---------|---------|-------------------|------|--------|------|
+| **Setup Complexity** | None | None | Minimal | Moderate | Moderate |
+| **Schema Required** | No | No | Optional | Yes | Yes |
+| **Query Capability** | 20+ operators | Key-value only | Limited | SQL (full) | Advanced |
+| **JSON Support** | Native | Manual | Manual | Manual | Manual |
+| **Nested Queries** | Yes | No | No | Joins required | Yes |
+| **Human Readable** | Yes (JSON files) | Yes (XML/JSON) | No (binary) | No (binary) | No (binary) |
+| **Best For** | JSON APIs, prototyping, flexible data | Simple settings | Structured data | Complex relations | Performance-critical |
+| **Learning Curve** | Minutes | Minutes | Hours | Days | Days |
+| **File Size** | Small | Small | Small | Medium | Large |
+
+**When to use tiny_db:**
+- Working with API JSON data
+- Rapid prototyping with real data
+- Flexible/evolving data structures
+- Human-readable storage preferred
+- Simple to moderate query complexity
+- < 10,000 documents per table
+
+**When to use alternatives:**
+- Simple key-value storage → SharedPreferences
+- Millions of records → Isar or SQLite
+- Complex relationships → SQLite
+- Maximum performance → Hive or Isar
+
+## Credits
+
+Inspired by the excellent [TinyDB](https://tinydb.readthedocs.io/) for Python by Markus Unterwaditzer and contributors. tiny_db brings the same philosophy of simplicity and power to the Dart ecosystem with 80%+ feature parity and several enhancements.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-# Roadmap
+<div align="center">
 
-Features under consideration for future releases:
-
-### Plugin Support
-- Index plugins for faster queries on large datasets
-- Custom storage backends
-- Schema validation plugins
-
-### Performance Optimizations
-- Batch operations for JsonStorage
-- Streaming query results for large datasets
-
-### Other Considerations
-
-Some features like query caching and middleware were considered but may not be implemented due to architectural decisions favoring simplicity and resource management. The current design emphasizes proper database closing and clean resource management over persistent middleware chains.
-
-<br>
-
----
-
-# Credits
-
-This package is heavily inspired by the outstanding [TinyDB](https://tinydb.readthedocs.io/en/latest/) project for Python, created by Markus Unterwaditzer and contributors. Many thanks to the TinyDB community for their elegant design and documentation.
-
-# License
-
-Tiny DB is available under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
-<br>
-
----
-
-# Comparisons vs SharedPreferences, Isar, Hive, SQLite
-
-Wondering how Tiny DB compares to other storage solutions?
-
-We've created a detailed comparison with SharedPreferences, Isar, Hive, and SQLite to help you choose the right tool for your needs.
-
-**[Read the full comparison here](doc/comparison.md)**
-
-Tiny DB positions itself as the "just right" option between simple key-value stores and full-featured databases - powerful enough for real applications but simple enough to learn in minutes.
+**[Documentation](https://github.com/vento007/tiny_db)** • **[Issues](https://github.com/vento007/tiny_db/issues)** • **[Contributing](https://github.com/vento007/tiny_db/blob/main/CONTRIBUTING.md)**
 
 
+</div>

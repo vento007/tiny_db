@@ -1,6 +1,6 @@
 name: tiny_db
 description: "Ultra-lightweight, embeddable NoSQL database for Dart & Flutter. Inspired by Python TinyDB, with advanced queries, update operations, and persistent or in-memory storage."
-version: 0.9.1+1
+version: 0.9.2
 homepage: https://github.com/vento007/tiny_db
 repository: https://github.com/vento007/tiny_db
 issue_tracker: https://github.com/vento007/tiny_db/issues
@@ -27,6 +27,7 @@ dev_dependencies:
   build_runner:
   mockito:
   coverage: ^1.6.3
+  http: ^1.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
