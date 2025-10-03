@@ -35,7 +35,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   cr_json_widget: ^1.1.1
-  
+  http: ^1.2.0
+
   # Local reference to tiny_db
   tiny_db:
     path: ../../

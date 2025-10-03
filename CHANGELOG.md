@@ -1,3 +1,9 @@
+## 0.9.2
+
+### Changed
+- Updated README with cleaner formatting (removed icons)
+- Added more Dart example demos
+
 ## 0.9.1+1
 
 ### Fixed
